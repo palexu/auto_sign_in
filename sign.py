@@ -64,6 +64,7 @@ if __name__ == '__main__':
     sched = BlockingScheduler()
     sched.add_job(run, 'cron', hour="7")
     try:
+        print("job start")
         sched.start()
     except KeyboardInterrupt:
         pass
