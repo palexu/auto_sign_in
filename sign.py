@@ -9,21 +9,39 @@ class yishuwang:
     def __init__(self):
         with open("config.yml") as f:
             config = yaml.load(f)
-        self.driver = webdriver.Chrome(config["dirver"])
+        driver_type = config["driver"].lower()
+        if "chrome" == driver_type:
+            self.driver = webdriver.Chrome(config["path"])
+        elif "phantomjs" == driver_type:
+            cap = webdriver.DesiredCapabilities.PHANTOMJS
+            cap["phantomjs.page.settings.resourceTimeout"] = 1000
+            cap["phantomjs.page.settings.loadImages"] = False
+            cap["phantomjs.page.settings.disk-cache"] = True
+            self.driver = webdriver.PhantomJS(executable_path=config["path"],desired_capabilities=cap)
+        else:
+            print("sorry,we does not support driver except Chrome and PhantomJS....")
+            return
+        print("browser open success")
         self.username = config["username"]
         self.password = config["password"]
         self.scKey = config["scKey"]
+        self.devMode = True
 
     def login(self):
-        self.driver.get("https://kindbook.cn/plugin.php?id=jz52_dl:index")
-        u = self.driver.find_element_by_xpath('//*[@id="ls_username"]')
-        u.clear()
-        u.send_keys(self.username)
-        p=self.driver.find_element_by_xpath('//*[@id="ls_password"]')
-        p.clear()
-        p.send_keys(self.password)
-        login_b=self.driver.find_element_by_xpath('//*[@id="lsform"]/table/tbody/tr[3]/td[2]/button')
-        login_b.click()
+        try:
+            self.driver.get("https://kindbook.cn/plugin.php?id=jz52_dl:index")
+            u = self.driver.find_element_by_xpath('//*[@id="ls_username"]')
+            u.clear()
+            u.send_keys(self.username)
+            p=self.driver.find_element_by_xpath('//*[@id="ls_password"]')
+            p.clear()
+            p.send_keys(self.password)
+            login_b=self.driver.find_element_by_xpath('//*[@id="lsform"]/table/tbody/tr[3]/td[2]/button')
+            login_b.click()
+        except Exception as e:
+            if not self.devMode:
+                self.msg("益书网签到异常",str(e))
+            print(e)
 
     def sign_in(self):
         try:
@@ -46,9 +64,12 @@ class yishuwang:
             do_check_in_b = self.driver.find_element_by_xpath('//*[@id="ct"]/div[1]/div[1]/form/table/tbody/tr/td/div/input')
             do_check_in_b.click()
 
-            self.msg()
+            if not self.devMode:
+                self.msg()
         except Exception as e:
-            self.msg("益书网签到异常",str(e))
+            if not self.devMode:
+                self.msg("益书网签到异常",str(e))
+            print(e)
         finally:
             self.driver.quit()
 
@@ -59,20 +80,22 @@ def run():
     try:
         y = yishuwang()
         y.login()
-        y.sign_in()
+        # y.sign_in()
     except Exception as e:
         print(e)
     finally:
         y.driver.quit()
 
 if __name__ == '__main__':
-    sched = BlockingScheduler()
-    sched.add_job(run, 'cron', hour="7")
-    try:
-        print("job start")
-        sched.start()
-    except KeyboardInterrupt:
-        pass
+    run()
+    
+    # sched = BlockingScheduler()
+    # sched.add_job(run, 'cron', hour="7")
+    # try:
+    #     print("job start")
+    #     sched.start()
+    # except KeyboardInterrupt:
+    #     pass
 
 
 
