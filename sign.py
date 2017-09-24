@@ -7,9 +7,9 @@ from selenium import webdriver
 
 class yishuwang:
     def __init__(self):
-        self.driver = webdriver.Chrome("/usr/local/bin/chromedriver")
         with open("config.yml") as f:
             config = yaml.load(f)
+        self.driver = webdriver.Chrome(config["dirver"])
         self.username = config["username"]
         self.password = config["password"]
         self.scKey = config["scKey"]
