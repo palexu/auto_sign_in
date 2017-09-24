@@ -1,21 +1,27 @@
 import sys
 import time
 import requests
+import yaml
 from apscheduler.schedulers.blocking import BlockingScheduler
 from selenium import webdriver
 
 class yishuwang:
     def __init__(self):
         self.driver = webdriver.Chrome("/usr/local/bin/chromedriver")
+        with open("config.yml") as f:
+            config = yaml.load(f)
+        self.username = config["username"]
+        self.password = config["password"]
+        self.scKey = config["scKey"]
 
     def login(self):
         self.driver.get("https://kindbook.cn/plugin.php?id=jz52_dl:index")
         u = self.driver.find_element_by_xpath('//*[@id="ls_username"]')
         u.clear()
-        u.send_keys("palexu")
+        u.send_keys(self.username)
         p=self.driver.find_element_by_xpath('//*[@id="ls_password"]')
         p.clear()
-        p.send_keys("xujunyu520")
+        p.send_keys(self.password)
         login_b=self.driver.find_element_by_xpath('//*[@id="lsform"]/table/tbody/tr[3]/td[2]/button')
         login_b.click()
 
@@ -47,8 +53,7 @@ class yishuwang:
             self.driver.quit()
 
     def msg(self,title="益书网签到成功",message=""):
-        scKey='SCU11255T9aac1a1f33b21e14d151caa16d6b424d59a66f9a1264f'
-        requests.get("https://sc.ftqq.com/" + scKey + ".send?text=" + title + "&desp=" + message)
+        requests.get("https://sc.ftqq.com/" + self.scKey + ".send?text=" + title + "&desp=" + message)
 
 def run():
     try:

@@ -1,0 +1,15 @@
+*.db
+*.log
+*.pyc
+
+*.txt
+!requirements.txt
+
+.idea/*
+.python-version
+
+*.bak
+!config.yml.bak
+config.yml
+
+
