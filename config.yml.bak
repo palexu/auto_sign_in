@@ -1,4 +1,5 @@
 username: your_username 
 password: your_password
 scKey: baidu serverChan, and get your scKey
-driver: your driver path
+driver: PhantomJS
+path: /usr/local/bin/phantomjs

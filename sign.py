@@ -54,24 +54,38 @@ class yishuwang:
             for i in windows:
                 if i!=self.driver.current_window_handle:
                     self.driver.switch_to_window(i)
+            print("switch_to_window:"+self.driver.current_url)
 
             #选择表情
             time.sleep(3)
-            biaoqing = self.driver.find_element_by_xpath('//*[@id="kx_s"]')
+            biaoqing = self.driver.find_element_by_xpath('//*[@id="kx"]')
             biaoqing.click()
 
             #提交
+            time.sleep(1.2)
             do_check_in_b = self.driver.find_element_by_xpath('//*[@id="ct"]/div[1]/div[1]/form/table/tbody/tr/td/div/input')
             do_check_in_b.click()
 
-            if not self.devMode:
-                self.msg()
+            
         except Exception as e:
             if not self.devMode:
                 self.msg("益书网签到异常",str(e))
             print(e)
-        finally:
-            self.driver.quit()
+
+    def isOk(self):
+        try:
+            e = self.driver.find_element_by_xpath('//*[@id="ct"]/div[1]/h1[1]')
+            if "您今天已经签到过了或者签到时间还未开始" in e.text:
+                e=self.driver.find_element_by_xpath('//*[@id="ct"]/div[1]')
+                print("签到成功")
+                print(e.text)
+                if not self.devMode:
+                    self.msg(message=e.text)
+            else:
+                print("失败")
+        except Exception as e:
+            print(e)
+
 
     def msg(self,title="益书网签到成功",message=""):
         requests.get("https://sc.ftqq.com/" + self.scKey + ".send?text=" + title + "&desp=" + message)
@@ -80,7 +94,8 @@ def run():
     try:
         y = yishuwang()
         y.login()
-        # y.sign_in()
+        y.sign_in()
+        y.isOk()
     except Exception as e:
         print(e)
     finally:
