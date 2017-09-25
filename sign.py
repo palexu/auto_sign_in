@@ -25,7 +25,7 @@ class yishuwang:
         self.username = config["username"]
         self.password = config["password"]
         self.scKey = config["scKey"]
-        self.devMode = True
+        self.devMode = False
 
     def login(self):
         try:
@@ -102,15 +102,15 @@ def run():
         y.driver.quit()
 
 if __name__ == '__main__':
-    run()
+    # run()
     
-    # sched = BlockingScheduler()
-    # sched.add_job(run, 'cron', hour="7")
-    # try:
-    #     print("job start")
-    #     sched.start()
-    # except KeyboardInterrupt:
-    #     pass
+    sched = BlockingScheduler()
+    sched.add_job(run, 'cron', hour="7")
+    try:
+        print("job start")
+        sched.start()
+    except KeyboardInterrupt:
+        pass
 
 
 
